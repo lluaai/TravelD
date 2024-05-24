@@ -40,7 +40,22 @@ class MainViewController: UIViewController {
         setupUI()
         setupViews()
         setupConstraints()
-        displayWelcomeMessage()
+//        displayWelcomeMessage()
+        
+        AuthService.shared.fetchUser { [weak self] user, error in
+            guard let self = self else { return }
+            if let error = error {
+                AlertManager.showFetchingUserError(on: self, with: error)
+                return
+            }
+
+            if let user = user {
+                self.welcomeLabel.text = "Салем, \(user.username)"
+                self.welcomeLabel.numberOfLines = 0 // Разрешаем перенос текста на несколько строк, если нужно
+                self.welcomeLabel.sizeToFit() // Обновляем размер метки, чтобы текст оказался в верхней части
+            }
+        }
+
     }
     
     private func setupViews() {
@@ -58,11 +73,11 @@ class MainViewController: UIViewController {
         }
     }
 
-    private func displayWelcomeMessage() {
-        // Извлекаем логин пользователя из `UserDefaults`
-        let currentUser = UserDefaults.standard.string(forKey: "currentLoggedInUser") ?? "Guest"
-        welcomeLabel.text = "Welcome, \(currentUser)!"
-    }
+//    private func displayWelcomeMessage() {
+//        // Извлекаем логин пользователя из `UserDefaults`
+//        let currentUser = UserDefaults.standard.string(forKey: "user.username") ?? "Guest"
+//        welcomeLabel.text = "Welcome, \(currentUser)!"
+//    }
     
     private func setupUI() {
         view.addSubview(topLabel)

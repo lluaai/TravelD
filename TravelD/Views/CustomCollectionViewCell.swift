@@ -58,10 +58,6 @@ class CustomCollectionViewCell: UICollectionViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8), // Adjust the leading anchor of titleLabel
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8), // Adjust the trailing anchor of titleLabel
             
-//            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8), // Adjust the top anchor of descriptionLabel
-//            descriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8), // Adjust the leading anchor of descriptionLabel
-//            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8), // Adjust the trailing anchor of descriptionLabel
-//            descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8) // Adjust the bottom anchor of descriptionLabel
         ])
     }
 }

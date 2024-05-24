@@ -26,7 +26,7 @@ class SettingsViewController: UIViewController {
     }
     
     func setupUI() {
-        backgroundView.backgroundColor = .red
+        backgroundView.backgroundColor = UIColor(red: 0x4E/255.0, green: 0x7A/255.0, blue: 0xB5/255.0, alpha: 1.0)
         view.addSubview(backgroundView)
         
         tableView.delegate = self
@@ -75,9 +75,19 @@ class SettingsViewController: UIViewController {
     }
     
     private func displayWelcomeMessage() {
-        // Остальной код остается без изменений
-        let currentUser = UserDefaults.standard.string(forKey: "currentLoggedInUser") ?? "Guest"
-        welcomeLabel.text = "\(currentUser)!"
+        AuthService.shared.fetchUser { [weak self] user, error in
+            guard let self = self else { return }
+            if let error = error {
+                AlertManager.showFetchingUserError(on: self, with: error)
+                return
+            }
+
+            if let user = user {
+                self.welcomeLabel.text = "\(user.username)"
+                self.welcomeLabel.numberOfLines = 0 // Разрешаем перенос текста на несколько строк, если нужно
+                self.welcomeLabel.sizeToFit() // Обновляем размер метки, чтобы текст оказался в верхней части
+            }
+        }
     }
     
     func fetchAndDisplayUserInfo() {
@@ -99,11 +109,11 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
         // Задаем текст для ячейки в зависимости от индекса
         switch indexPath.row {
         case 0:
-            cell.textLabel?.text = "Пайдалы ақпараттар"
+            cell.textLabel?.text = "Пайдалы ақпарат"
         case 1:
-            cell.textLabel?.text = "Техникалық ақпарат"
+            cell.textLabel?.text = "Таңдаулылар"
         case 2:
-            cell.textLabel?.text = "Совет"
+            cell.textLabel?.text = "Шығу"
         default:
             break
         }
@@ -119,12 +129,21 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
                    navigationController?.pushViewController(myPlaceViewController, animated: true)
             break
         case 1:
-            // Открываем новый раздел информации для "Полезная информация"
-            // Ваш код для открытия нового контроллера или отображения информации
+           
             break
         case 2:
-            // Открываем новый раздел информации для "Совет"
-            // Ваш код для открытия нового контроллера или отображения информации
+            AuthService.shared.signOut { [weak self] error in
+                       guard let self = self else { return }
+                       if let error = error {
+                           AlertManager.showLogoutError(on: self, with: error)
+                           return
+                       }
+                       
+                       if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                           sceneDelegate.checkAuthentication()
+                       }
+                   }
+            
             break
         default:
             break
@@ -133,97 +152,7 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
 }
  
 class MyPlaceViewController: UIViewController {
-    // MARK: - Properties
-  //
-  //    private let nameLabel: UILabel = {
-  //        let label = UILabel()
-  //        label.translatesAutoresizingMaskIntoConstraints = false
-  //        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-  //        label.textAlignment = .center
-  //        return label
-  //    }()
-  //
-  //    private let emailLabel: UILabel = {
-  //        let label = UILabel()
-  //        label.translatesAutoresizingMaskIntoConstraints = false
-  //        label.font = UIFont.systemFont(ofSize: 16)
-  //        label.textAlignment = .center
-  //        return label
-  //    }()
-  //
-  //    private let logoutButton: UIButton = {
-  //        let button = UIButton(type: .system)
-  //        button.translatesAutoresizingMaskIntoConstraints = false
-  //        button.setTitle("Logout", for: .normal)
-  //        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-  //        button.addTarget(SettingsViewController.self, action: #selector(logoutButtonTapped), for: .touchUpInside)
-  //        return button
-  //    }()
-  //
-  //    // MARK: - Lifecycle
-  //
-  //    override func viewDidLoad() {
-  //        super.viewDidLoad()
-  //        view.backgroundColor = .white
-  //
-  //        setupViews()
-  //        displayWelcomeMessage()
-  //    }
-  //
-  //    // MARK: - Setup
-  //
-  //    private func setupViews() {
-  //        view.addSubview(nameLabel)
-  //        view.addSubview(emailLabel)
-  //        view.addSubview(logoutButton)
-  //
-  //        NSLayoutConstraint.activate([
-  //            nameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-  //            nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
-  //
-  //            emailLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-  //            emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 20),
-  //
-  //            logoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-  //            logoutButton.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 50)
-  //        ])
-  //    }
-  //
-  //    // MARK: - Actions
-  //    @objc private func logoutButtonTapped() {
-  //        // Очищаем данные о текущем пользователе из UserDefaults
-  //        UserDefaults.standard.removeObject(forKey: "currentLoggedInUser")
-  //        UserDefaults.standard.removeObject(forKey: "currentLoggedInEmail")
-  //
-  //        // Перенаправляем пользователя на экран входа
-  //        // Зависит от вашей архитектуры навигации.
-  //        // Например, если у вас UINavigationController, вы можете использовать метод popToRootViewController:
-  //        if let navigationController = navigationController {
-  //            navigationController.popToRootViewController(animated: true)
-  //        } else {
-  //            // Если вы не используете UINavigationController, можете использовать другие методы, например, презентацию экрана входа модально.
-  //        }
-  //    }
-  //
-  //    // MARK: - Helpers
-  //    private func displayWelcomeMessage() {
-  //        // Извлекаем логин пользователя из UserDefaults
-  //        let currentUser = UserDefaults.standard.string(forKey: "currentLoggedInUser") ?? "Guest"
-  //        nameLabel.text = "Welcome, \(currentUser)!"
-  //    }
-  //
-  ////    private func displayUserInfo() {
-  ////        // Извлекаем информацию о пользователе из хранилища данных
-  ////        let currentUser = UserDefaults.standard.string(forKey: "currentLoggedInUser") ?? "Guest"
-  ////        let currentEmail = UserDefaults.standard.string(forKey: "currentLoggedInEmail") ?? ""
-  ////
-  ////        // Отображаем информацию о пользователе
-  ////        nameLabel.text = currentUser
-  ////        emailLabel.text = currentEmail
-  //
-          
-          
-          //       }
+
               var viewModel = SettingsViewModel()
           
               private lazy var tableView: UITableView = {
@@ -238,7 +167,7 @@ class MyPlaceViewController: UIViewController {
               override func viewDidLoad() {
                   super.viewDidLoad()
           
-                  title = "Қосымша"
+                  title = "Пайдалы ақпарат"
                   setupViews()
                   setupConstraints()
               }

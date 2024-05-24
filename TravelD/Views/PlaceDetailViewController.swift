@@ -170,7 +170,7 @@ class PlaceDetailViewController: UIViewController, UICollectionViewDataSource, U
         contentView.addSubview(carButton)
         
         let walButton = UIButton(type: .system)
-        if let walIcon = UIImage(named: "bus") {
+        if let walIcon = UIImage(named: "walk") {
             walButton.setImage(walIcon.withRenderingMode(.alwaysTemplate), for: .normal)
         }
         walButton.tintColor = UIColor(red: 0.9176, green: 0.9019, blue: 0.7922, alpha: 1.0)
